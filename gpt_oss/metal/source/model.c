@@ -356,6 +356,10 @@ enum gptoss_status GPTOSS_ABI gptoss_model_create_from_file(
     if (status != gptoss_status_success) {
         goto cleanup;
     }
+    status = gptoss_metal_function_create(&model->library, "gptoss_f32_sample", &model->f32_sample_fn);
+    if (status != gptoss_status_success) {
+        goto cleanup;
+    }
     status = gptoss_metal_function_create(&model->library, "gptoss_f32_sdpa_q8_d64", &model->f32_sdpa_q8_d64_fn);
     if (status != gptoss_status_success) {
         goto cleanup;
@@ -495,6 +499,7 @@ enum gptoss_status GPTOSS_ABI gptoss_model_release(
             gptoss_metal_function_release(&model->f32_topk_softmax_e32_k4_fn);
             gptoss_metal_function_release(&model->f32_topk_softmax_e128_k4_fn);
             gptoss_metal_function_release(&model->f32_softmax_fn);
+            gptoss_metal_function_release(&model->f32_sample_fn);
             gptoss_metal_function_release(&model->f32_sdpa_q8_d64_fn);
             gptoss_metal_library_release(&model->library);
 

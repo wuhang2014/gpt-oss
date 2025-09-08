@@ -77,6 +77,7 @@ struct gptoss_model {
     struct gptoss_metal_function f32_topk_softmax_e128_k4_fn;
     struct gptoss_metal_function f32_sdpa_q8_d64_fn;
     struct gptoss_metal_function f32_softmax_fn;
+    struct gptoss_metal_function f32_sample_fn;
 
     size_t per_block_shared_weights_size;
     size_t per_expert_block_weight_size;

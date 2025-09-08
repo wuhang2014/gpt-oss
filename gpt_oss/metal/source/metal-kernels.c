@@ -836,3 +836,56 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_softmax(
         (const size_t[]) {score_offset, argmax_offset, prob_offset, sum_offset},
         /*threadgroup_buffer_size=*/0);
 }
+
+enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_sample(
+    const struct gptoss_metal_command_buffer* command_buffer,
+    const struct gptoss_metal_function* f32_sample_fn,
+    size_t min_threadgroup_size,
+    const struct gptoss_metal_buffer* prob_buffer,
+    size_t prob_offset,
+    const struct gptoss_metal_buffer* sum_buffer,
+    size_t sum_offset,
+    const struct gptoss_metal_buffer* prediction_buffer,
+    size_t prediction_offset,
+    uint64_t rng_seed,
+    uint32_t num_blocks,
+    uint32_t num_channels,
+    uint32_t num_channels_per_block,
+    uint32_t token_offset)
+{
+    if (command_buffer->object == NULL || f32_sample_fn->pipeline_state_object == NULL) {
+        return gptoss_status_invalid_state;
+    }
+
+    if (min_threadgroup_size > f32_sample_fn->max_threadgroup_threads) {
+        return gptoss_status_invalid_argument;
+    }
+
+    if (min_threadgroup_size % f32_sample_fn->simdgroup_threads != 0) {
+        return gptoss_status_invalid_argument;
+    }
+
+    if (num_blocks > f32_sample_fn->max_threadgroup_threads) {
+        return gptoss_status_invalid_argument;
+    }
+
+    const struct gptoss_sample_args args = {
+        .seed = rng_seed,
+        .token_offset = token_offset,
+        .num_blocks = num_blocks,
+        .num_dims = num_channels,
+        .num_dims_per_block = num_channels_per_block,
+    };
+
+    const size_t threadgroup_size = math_max(min_threadgroup_size,
+        math_round_up_po2(num_blocks, f32_sample_fn->simdgroup_threads));
+    return gptoss_metal_command_buffer_encode_launch_kernel(
+        command_buffer, f32_sample_fn,
+        threadgroup_size, 1, 1,
+        1, 1, 1,
+        sizeof(args), &args,
+        3,
+        (const struct gptoss_metal_buffer *[]) {prob_buffer, sum_buffer, prediction_buffer},
+        (const size_t[]) {prob_offset, sum_offset, prediction_offset},
+        /*threadgroup_buffer_size=*/0);
+}
