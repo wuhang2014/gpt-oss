@@ -290,7 +290,9 @@ enum gptoss_status GPTOSS_ABI gptoss_context_sample(
     gptoss_context_t context,
     float temperature,
     uint64_t seed,
-    uint32_t* token_out);
+    size_t max_tokens,
+    uint32_t* tokens_out,
+    size_t* num_tokens_out);
 
 /*
  * Increments a Context object's reference count.

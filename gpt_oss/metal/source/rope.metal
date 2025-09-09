@@ -13,9 +13,14 @@
 kernel void gptoss_f32_rope(
     constant gptoss_rope_args& args [[ buffer(0) ]],
     device float2* activations [[ buffer(1) ]],
+    const device gptoss_control* control [[ buffer(2) ]],
     uint2 gid [[thread_position_in_grid]])
 {
     const uint num_head_dims = 64;
+    if (control->abort != 0) {
+        return;
+    }
+
     const float head_idx = static_cast<float>(gid.x % (num_head_dims / 2));
     const uint token_idx = args.token_offset + gid.y;
     activations += gid.y * args.token_stride + gid.x;

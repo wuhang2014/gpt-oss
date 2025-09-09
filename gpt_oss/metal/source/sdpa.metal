@@ -18,6 +18,7 @@ kernel void gptoss_f32_sdpa_q8_d64(
     const device float* v [[ buffer(3) ]],
     const device bfloat* s [[ buffer(4) ]],
     device float* output [[ buffer(5) ]],
+    const device gptoss_control* control [[ buffer(6) ]],
     threadgroup void* threadgroup_buffer [[ threadgroup(0) ]],
     uint2 gid [[threadgroup_position_in_grid]],
     uint2 tid [[thread_position_in_threadgroup]],
@@ -26,6 +27,9 @@ kernel void gptoss_f32_sdpa_q8_d64(
     uint num_simdgroups [[simdgroups_per_threadgroup]])
 {
     const uint simdgroup_size = 32;
+    if (control->abort != 0) {
+        return;
+    }
 
     const uint num_q_heads = 64;
     const uint num_kv_heads = 8;

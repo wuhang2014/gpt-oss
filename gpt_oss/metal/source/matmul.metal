@@ -23,12 +23,16 @@ kernel void gptoss_f32_bf16w_matmul(
     const device bfloat4* weight [[ buffer(2) ]],
     const device bfloat* bias [[ buffer(3) ]],
     device float* output [[ buffer(4) ]],
+    const device gptoss_control* control [[ buffer(5) ]],
     uint2 gid [[threadgroup_position_in_grid]],
     uint simdgroup_tid [[thread_index_in_simdgroup]],
     uint simdgroup_idx [[simdgroup_index_in_threadgroup]],
     uint num_simdgroups [[simdgroups_per_threadgroup]])
 {
     const uint simdgroup_size = 32;
+    if (control->abort != 0) {
+        return;
+    }
 
     const uint num_column_vecs = args.num_column_vecs;
     const uint row = gid.x * num_simdgroups + simdgroup_idx;
@@ -68,6 +72,7 @@ kernel void gptoss_f32_bf16w_unembedding(
     const device bfloat4* weight [[ buffer(2) ]],
     device float* output [[ buffer(3) ]],
     device metal::atomic_ulong* argmax [[ buffer(4) ]],
+    const device gptoss_control* control [[ buffer(5) ]],
     uint2 gid [[threadgroup_position_in_grid]],
     uint simdgroup_tid [[thread_index_in_simdgroup]],
     uint simdgroup_idx [[simdgroup_index_in_threadgroup]],
@@ -75,6 +80,9 @@ kernel void gptoss_f32_bf16w_unembedding(
 {
     const uint simdgroup_size = 32;
     threadgroup uint2 threadgroup_buffer[32];
+    if (control->abort != 0) {
+        return;
+    }
 
     const uint num_column_vecs = args.num_column_vecs;
     const uint row_start = gid.x * args.num_rows_per_threadgroup + simdgroup_idx;

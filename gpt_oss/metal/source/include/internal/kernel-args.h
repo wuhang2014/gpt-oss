@@ -9,6 +9,10 @@ struct gptoss_expert_prediction {
     float score;
 };
 
+struct gptoss_control {
+    uint32_t abort;
+};
+
 struct gptoss_topk_args {
     uint32_t num_vecs_per_token;
 };
@@ -105,8 +109,8 @@ struct gptoss_softmax_args {
 };
 
 struct gptoss_sample_args {
-    uint64_t seed;
-    uint32_t token_offset;
+    uint64_t rng_seed;
+    uint32_t rng_offset;
     uint32_t num_blocks;
     uint32_t num_dims;
     uint32_t num_dims_per_block;

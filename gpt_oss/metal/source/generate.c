@@ -268,8 +268,9 @@ int main(int argc, char *argv[]) {
     while (options.max_tokens == 0 || atomic_load(&globals.num_generated_tokens) < options.max_tokens) {
 
         uint32_t predicted_token = UINT32_MAX;
+        size_t num_predicted_tokens = 0;
         const uint64_t inference_start_timestamp = mach_continuous_time();
-        status = gptoss_context_sample(context, options.temperature, /*rng_state=*/0, &predicted_token);
+        status = gptoss_context_sample(context, options.temperature, /*rng_state=*/0, /*num_tokens=*/1, &predicted_token, &num_predicted_tokens);
         if (status != gptoss_status_success) {
             fprintf(stderr, "Error: failed to sample from the Context object\n");
             goto error;

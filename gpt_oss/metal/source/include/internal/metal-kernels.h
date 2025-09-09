@@ -74,6 +74,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_bf16_f32_embeddings
     size_t weight_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_channels);
 
@@ -86,6 +88,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_bf16w_rmsnorm(
     size_t weight_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_channels,
     float epsilon);
@@ -102,6 +106,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_bf16w_matmul(
     size_t bias_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_cols,
     uint32_t num_rows);
@@ -118,6 +124,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_bf16w_matmul_ad
     size_t bias_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_cols,
     uint32_t num_rows);
@@ -135,6 +143,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_bf16w_unembeddi
     size_t output_offset,
     const struct gptoss_metal_buffer* argmax_buffer,
     size_t argmax_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_cols,
     uint32_t num_rows);
@@ -155,6 +165,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_mf4w_moe_matmul
     size_t bias_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     float swiglu_limit,
     uint32_t expert_stride,
     uint32_t num_tokens,
@@ -178,6 +190,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_mf4w_moe_matmul
     size_t bias_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t expert_stride,
     uint32_t num_tokens,
     uint32_t num_active_experts,
@@ -189,6 +203,9 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_rope(
     const struct gptoss_metal_function* f32_rope_fn,
     size_t threadgroup_size,
     const struct gptoss_metal_buffer* activations_buffer,
+    size_t activations_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     float rope_base,
     float interpolation_scale,
     float yarn_offset,
@@ -211,6 +228,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_accumulate(
     size_t expert_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_channels,
     uint32_t num_tokens,
     uint32_t num_experts);
@@ -222,6 +241,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_topk(
     size_t input_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_tokens,
     uint32_t num_experts,
     uint32_t num_active_experts);
@@ -239,6 +260,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_sdpa(
     size_t s_offset,
     const struct gptoss_metal_buffer* output_buffer,
     size_t output_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t window,
     uint32_t num_q_tokens,
     uint32_t num_kv_tokens,
@@ -259,6 +282,8 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_softmax(
     size_t prob_offset,
     const struct gptoss_metal_buffer* sum_buffer,
     size_t sum_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint32_t num_channels,
     uint32_t num_tokens,
     float temperature,
@@ -273,13 +298,15 @@ enum gptoss_status gptoss_metal_command_buffer_encode_launch_f32_sample(
     size_t prob_offset,
     const struct gptoss_metal_buffer* sum_buffer,
     size_t sum_offset,
-    const struct gptoss_metal_buffer* prediction_buffer,
-    size_t prediction_offset,
+    const struct gptoss_metal_buffer* token_buffer,
+    size_t token_offset,
+    const struct gptoss_metal_buffer* control_buffer,
+    size_t control_offset,
     uint64_t rng_seed,
+    uint32_t rng_offset,
     uint32_t num_blocks,
     uint32_t num_channels,
-    uint32_t num_channels_per_block,
-    uint32_t token_offset);
+    uint32_t num_channels_per_block);
 
 #ifdef __cplusplus
 }  // extern "C"

@@ -36,6 +36,7 @@ kernel void gptoss_f32_softmax(
     const device uint2* argmax [[ buffer(2) ]],
     device float* prob [[ buffer(3) ]],
     device float* sum [[ buffer(4) ]],
+    const device gptoss_control* control [[ buffer(5) ]],
     uint tidx [[thread_index_in_threadgroup]],
     uint2 gid [[threadgroup_position_in_grid]],
     uint2 threadgroup_size [[threads_per_threadgroup]],
@@ -44,6 +45,9 @@ kernel void gptoss_f32_softmax(
     uint num_simdgroups [[simdgroups_per_threadgroup]])
 {
     threadgroup float threadgroup_sumexp[32];
+    if (control->abort != 0) {
+        return;
+    }
 
     score += gid.y * args.num_vecs + gid.x * args.num_vecs_per_threadgroup;
     prob += gid.y * args.num_vecs + gid.x * args.num_vecs_per_threadgroup;
@@ -86,6 +90,7 @@ kernel void gptoss_f32_sample(
     device const float* prob [[ buffer(1) ]],
     device const float* sum [[ buffer(2) ]],
     device uint* prediction [[ buffer(3) ]],
+    device gptoss_control* control [[ buffer(4) ]],
     uint tid [[thread_position_in_threadgroup]],
     uint threadgroup_size [[threads_per_threadgroup]],
     uint simdgroup_tid [[thread_index_in_simdgroup]],
@@ -95,8 +100,11 @@ kernel void gptoss_f32_sample(
     threadgroup float threadgroup_sum_buffer[32];
     threadgroup uint threadgroup_idx_buffer[32];
     threadgroup float threadgroup_cumsum_buffer[32];
+    if (control->abort != 0) {
+        return;
+    }
 
-    const uint sample_word = rng_squares32(args.token_offset, args.seed);
+    const uint sample_word = rng_squares32(args.rng_offset, args.rng_seed);
     float sample_cdf = static_cast<float>(sample_word & 0x00FFFFFFu) * 0x1.0p-24f;
 
     float cumsum = 0.0f;

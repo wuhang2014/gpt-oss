@@ -147,6 +147,7 @@ struct gptoss_context {
     struct gptoss_metal_buffer moe_activation_buffer;  // MoE MLP output (per-active expert)
 
     // Input/output buffers.
+    struct gptoss_metal_buffer control_buffer;
     struct gptoss_metal_buffer token_buffer;  // uint32 token IDs
     struct gptoss_metal_buffer score_buffer;  // unembedding outputs
     struct gptoss_metal_buffer prob_buffer;

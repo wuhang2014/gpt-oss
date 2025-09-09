@@ -78,6 +78,8 @@ public:
         metal::Buffer weight_buffer{device_, num_rows() * num_cols() * sizeof(gptoss_bfloat16)};
         metal::Buffer bias_buffer{device_, num_rows() * sizeof(gptoss_bfloat16)};
         metal::Buffer output_buffer{device_, num_tokens() * num_rows() * sizeof(float)};
+        metal::Buffer control_buffer{device_, sizeof(gptoss_control)};
+        std::memset(control_buffer.ptr(), 0, sizeof(gptoss_control));
 
         command_buffer.encode_launch_f32_fill_random(
             f32_fill_random_fn_,
@@ -115,6 +117,8 @@ public:
                 /*bias_offset=*/0,
                 output_buffer.handle(),
                 /*output_offset=*/0,
+                control_buffer.handle(),
+                /*control_offset=*/0,
                 num_tokens(),
                 num_cols(),
                 num_rows()),
