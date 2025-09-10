@@ -78,7 +78,11 @@ def call_python_script_with_uv(script: str) -> str:
         exec_result = subprocess.run(
             ["uv", "run", "--no-project", "python", script_path],
             capture_output=True)
-        return exec_result.stdout.decode("utf-8")
+        return (
+            exec_result.stdout.decode("utf-8")
+            if exec_result.returncode == 0
+            else exec_result.stderr.decode("utf-8")
+        )
 
 
 class PythonTool(Tool):
